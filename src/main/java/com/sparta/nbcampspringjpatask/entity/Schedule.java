@@ -24,7 +24,7 @@ public class Schedule extends Timestamped{
     @Column(name = "user_nm" , nullable = false)
     private String user_nm;
 
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
     public Schedule(ScheduleInsertDto scheduleInsertDto) {

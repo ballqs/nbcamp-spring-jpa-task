@@ -43,4 +43,9 @@ public class ScheduleService {
         PageRequest pageRequest = PageRequest.of(page - 1 , size , Sort.by("modifiedAt").descending());
         return scheduleRepository.findAll(pageRequest).map(ScheduleSelectAllPagingDto::new);
     }
+
+    public void deleteSchedule(Long id) {
+        Schedule schedule = findById(id);
+        scheduleRepository.delete(schedule);
+    }
 }

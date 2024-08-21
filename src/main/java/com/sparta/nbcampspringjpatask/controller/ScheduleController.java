@@ -42,4 +42,10 @@ public class ScheduleController {
     public ResponseEntity<ResponseDto<ScheduleSelectDto>> updateSchedule(@PathVariable Long id , @RequestBody ScheduleUpdateDto scheduleUpdateDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.updateSchedule(id , scheduleUpdateDto) , "성공적으로 수정완료했습니다."));
     }
+
+    @DeleteMapping("/schedules/{id}")
+    public ResponseEntity<ResponseDto<String>> deleteSchedule(@PathVariable Long id) {
+        scheduleService.deleteSchedule(id);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "" , "성공적으로 삭제완료했습니다."));
+    }
 }
