@@ -5,7 +5,9 @@ import com.sparta.nbcampspringjpatask.dto.CommentSelectDto;
 import com.sparta.nbcampspringjpatask.dto.CommentUpdateDto;
 import com.sparta.nbcampspringjpatask.entity.Comment;
 import com.sparta.nbcampspringjpatask.entity.Schedule;
+import com.sparta.nbcampspringjpatask.entity.User;
 import com.sparta.nbcampspringjpatask.repository.CommentRepository;
+import com.sparta.nbcampspringjpatask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +20,14 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ScheduleService scheduleService;
+    private final UserService userService;
 
     public CommentSelectDto createComment(CommentInsertDto commentInsertDto) {
         Long id = commentInsertDto.getScheduleId();
         Schedule schedule = scheduleService.findById(id);
+        User user = userService.findById(commentInsertDto.getUserId());
 
-        Comment comment = new Comment(commentInsertDto);
+        Comment comment = new Comment(commentInsertDto , user);
         comment.setSchedule(schedule);
 
         return new CommentSelectDto(commentRepository.save(comment));

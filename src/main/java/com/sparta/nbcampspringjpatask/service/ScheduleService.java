@@ -44,6 +44,7 @@ public class ScheduleService {
         return scheduleRepository.findAll(pageRequest).map(ScheduleSelectAllPagingDto::new);
     }
 
+    @Transactional
     public void deleteSchedule(Long id) {
         Schedule schedule = findById(id);
         scheduleRepository.delete(schedule);

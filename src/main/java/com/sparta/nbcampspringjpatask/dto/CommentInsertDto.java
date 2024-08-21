@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class CommentInsertDto {
     private String content;
-    private String user_nm;
+    private Long userId;
     private Long scheduleId;
 }

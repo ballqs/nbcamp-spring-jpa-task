@@ -1,19 +1,12 @@
 package com.sparta.nbcampspringjpatask.controller;
 
 import com.sparta.nbcampspringjpatask.dto.*;
-import com.sparta.nbcampspringjpatask.entity.Schedule;
 import com.sparta.nbcampspringjpatask.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
