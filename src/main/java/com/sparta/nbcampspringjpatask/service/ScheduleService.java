@@ -31,7 +31,7 @@ public class ScheduleService {
         return new ScheduleSelectDto(schedule);
     }
 
-    private Schedule findById(Long id) {
+    public Schedule findById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(() -> new NullPointerException("선택한 일정은 존재하지 않습니다."));
     }
 }

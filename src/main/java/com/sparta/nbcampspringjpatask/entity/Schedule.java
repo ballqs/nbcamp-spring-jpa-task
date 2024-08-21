@@ -5,11 +5,12 @@ import com.sparta.nbcampspringjpatask.dto.ScheduleUpdateDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "schedule")
 public class Schedule extends Timestamped{
@@ -23,6 +24,9 @@ public class Schedule extends Timestamped{
     @Column(name = "user_nm" , nullable = false)
     private String user_nm;
 
+    @OneToMany(mappedBy = "schedule")
+    private List<Comment> commentList = new ArrayList<>();
+
     public Schedule(ScheduleInsertDto scheduleInsertDto) {
         this.title = scheduleInsertDto.getTitle();
         this.content = scheduleInsertDto.getContent();
@@ -33,5 +37,10 @@ public class Schedule extends Timestamped{
         this.title = scheduleUpdateDto.getTitle();
         this.content = scheduleUpdateDto.getContent();
         this.user_nm = scheduleUpdateDto.getUser_nm();
+    }
+
+    public void addCommentList(Comment comment) {
+        this.commentList.add(comment);
+        comment.setSchedule(this); // 외래 키(연관 관계) 설정
     }
 }

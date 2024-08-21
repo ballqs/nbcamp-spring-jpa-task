@@ -1,0 +1,56 @@
+package com.sparta.nbcampspringjpatask.service;
+
+import com.sparta.nbcampspringjpatask.dto.CommentInsertDto;
+import com.sparta.nbcampspringjpatask.dto.CommentSelectDto;
+import com.sparta.nbcampspringjpatask.dto.CommentUpdateDto;
+import com.sparta.nbcampspringjpatask.entity.Comment;
+import com.sparta.nbcampspringjpatask.entity.Schedule;
+import com.sparta.nbcampspringjpatask.repository.CommentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CommentService {
+
+    private final CommentRepository commentRepository;
+    private final ScheduleService scheduleService;
+
+    public CommentSelectDto createComment(CommentInsertDto commentInsertDto) {
+        Long id = commentInsertDto.getScheduleId();
+        Schedule schedule = scheduleService.findById(id);
+
+        Comment comment = new Comment(commentInsertDto);
+        comment.setSchedule(schedule);
+
+        return new CommentSelectDto(commentRepository.save(comment));
+    }
+
+    public CommentSelectDto selectComment(Long id) {
+        return new CommentSelectDto(findById(id));
+    }
+
+    public List<CommentSelectDto> selectAllComment() {
+        return commentRepository.findAll().stream().map(CommentSelectDto::new).toList();
+    }
+
+    @Transactional
+    public CommentSelectDto updateComment(Long id , CommentUpdateDto commentUpdateDto) {
+        Comment comment = findById(id);
+        comment.update(commentUpdateDto);
+        return new CommentSelectDto(comment);
+    }
+
+    @Transactional
+    public void deleteComment(Long id) {
+        Comment comment = findById(id);
+        commentRepository.delete(comment);
+    }
+
+    public Comment findById(Long id) {
+        return commentRepository.findById(id).orElseThrow(() -> new NullPointerException("선택한 댓글은 존재하지 않습니다."));
+    }
+}
