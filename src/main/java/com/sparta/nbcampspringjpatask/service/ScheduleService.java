@@ -1,6 +1,7 @@
 package com.sparta.nbcampspringjpatask.service;
 
 import com.sparta.nbcampspringjpatask.dto.ScheduleInsertDto;
+import com.sparta.nbcampspringjpatask.dto.ScheduleSelectAllPagingDto;
 import com.sparta.nbcampspringjpatask.dto.ScheduleSelectDto;
 import com.sparta.nbcampspringjpatask.dto.ScheduleUpdateDto;
 import com.sparta.nbcampspringjpatask.entity.Schedule;
@@ -38,8 +39,8 @@ public class ScheduleService {
         return scheduleRepository.findById(id).orElseThrow(() -> new NullPointerException("선택한 일정은 존재하지 않습니다."));
     }
 
-    public Page<Schedule> selectAllPagingSchedule(int page , int size) {
+    public Page<ScheduleSelectAllPagingDto> selectAllPagingSchedule(int page , int size) {
         PageRequest pageRequest = PageRequest.of(page - 1 , size , Sort.by("modifiedAt").descending());
-        return scheduleRepository.findAll(pageRequest);
+        return scheduleRepository.findAll(pageRequest).map(ScheduleSelectAllPagingDto::new);
     }
 }

@@ -35,7 +35,7 @@ public class ScheduleController {
     @GetMapping("/schedules")
     public ResponseEntity<ResponseDto<Page<ScheduleSelectAllPagingDto>>> selectAllPagingSchedule(@RequestParam(defaultValue = "1") int page ,
                                                                                                  @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.selectAllPagingSchedule(page , size).map(ScheduleSelectAllPagingDto::new) , "성공적으로 조회완료했습니다."));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.selectAllPagingSchedule(page , size) , "성공적으로 조회완료했습니다."));
     }
 
     @PatchMapping("/schedules/{id}")
