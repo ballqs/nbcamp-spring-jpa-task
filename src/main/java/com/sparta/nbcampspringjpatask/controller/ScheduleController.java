@@ -1,15 +1,19 @@
 package com.sparta.nbcampspringjpatask.controller;
 
-import com.sparta.nbcampspringjpatask.dto.ResponseDto;
-import com.sparta.nbcampspringjpatask.dto.ScheduleInsertDto;
-import com.sparta.nbcampspringjpatask.dto.ScheduleSelectDto;
-import com.sparta.nbcampspringjpatask.dto.ScheduleUpdateDto;
+import com.sparta.nbcampspringjpatask.dto.*;
+import com.sparta.nbcampspringjpatask.entity.Schedule;
 import com.sparta.nbcampspringjpatask.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,23 +22,24 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    // 일정 저장
     @PostMapping("/schedules")
     public ResponseEntity<ResponseDto<ScheduleSelectDto>> createSchedule(@RequestBody ScheduleInsertDto scheduleInsertDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.createSchedule(scheduleInsertDto) , "성공적으로 등록완료했습니다."));
     }
 
-    // 일정 단건조회
     @GetMapping("/schedules/{id}")
     public ResponseEntity<ResponseDto<ScheduleSelectDto>> selectSchedule(@PathVariable Long id) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.selectSchedule(id) , "성공적으로 조회완료했습니다."));
     }
 
-    // 일정 수정
+    @GetMapping("/schedules")
+    public ResponseEntity<ResponseDto<Page<ScheduleSelectAllPagingDto>>> selectAllPagingSchedule(@RequestParam(defaultValue = "1") int page ,
+                                                                                                 @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.selectAllPagingSchedule(page , size).map(ScheduleSelectAllPagingDto::new) , "성공적으로 조회완료했습니다."));
+    }
+
     @PatchMapping("/schedules/{id}")
     public ResponseEntity<ResponseDto<ScheduleSelectDto>> updateSchedule(@PathVariable Long id , @RequestBody ScheduleUpdateDto scheduleUpdateDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.updateSchedule(id , scheduleUpdateDto) , "성공적으로 수정완료했습니다."));
     }
-
-
 }
