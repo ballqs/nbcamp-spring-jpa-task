@@ -2,6 +2,7 @@ package com.sparta.nbcampspringjpatask.controller;
 
 import com.sparta.nbcampspringjpatask.dto.*;
 import com.sparta.nbcampspringjpatask.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<ResponseDto<UserSelectDto>> createUser(@RequestBody UserInsertDto userInsertDto) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto) , "성공적으로 등록완료했습니다."));
+    public ResponseEntity<ResponseDto<UserSignupDto>> createUser(@RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto , res) , "성공적으로 등록완료했습니다."));
     }
 
     @GetMapping("/users/{id}")

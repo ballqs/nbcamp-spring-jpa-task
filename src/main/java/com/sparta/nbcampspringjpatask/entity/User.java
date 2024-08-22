@@ -21,6 +21,8 @@ public class User extends Timestamped{
     private String name;
     @Column(name = "email" , nullable = false)
     private String email;
+    @Column(name = "pw" , nullable = false)
+    private String pw;
 
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
@@ -28,10 +30,10 @@ public class User extends Timestamped{
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
 
-
-    public User(UserInsertDto userInsertDto) {
-        this.name = userInsertDto.getName();
-        this.email = userInsertDto.getEmail();
+    public User(String name , String email , String pw) {
+        this.name = name;
+        this.email = email;
+        this.pw = pw;
     }
 
     public void update(UserUpdateDto userUpdateDto) {
