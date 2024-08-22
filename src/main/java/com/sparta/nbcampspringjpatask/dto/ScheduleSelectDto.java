@@ -13,7 +13,9 @@ public class ScheduleSelectDto {
     private Long id;
     private String title;
     private String content;
+    private String userIds;
     private String userNms;
+    private String userEmails;
     private String createdAt;
     private String modifiedAt;
 
@@ -22,7 +24,9 @@ public class ScheduleSelectDto {
         this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
+        this.userIds = schedule.getScheduleMappingList().stream().map(mapping -> Long.toString(mapping.getUser().getId())).collect(Collectors.joining(","));
         this.userNms = schedule.getScheduleMappingList().stream().map(mapping -> mapping.getUser().getName()).collect(Collectors.joining(","));
+        this.userEmails = schedule.getScheduleMappingList().stream().map(mapping -> mapping.getUser().getEmail()).collect(Collectors.joining(","));
         this.createdAt = schedule.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"));
         this.modifiedAt = schedule.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"));
     }
