@@ -21,26 +21,25 @@ public class Schedule extends Timestamped{
     private String title;
     @Column(name = "content", nullable = false, length = 500)
     private String content;
-    @Column(name = "user_nm" , nullable = false)
-    private String user_nm;
 
     @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
+    private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
+
     public Schedule(ScheduleInsertDto scheduleInsertDto) {
         this.title = scheduleInsertDto.getTitle();
         this.content = scheduleInsertDto.getContent();
-        this.user_nm = scheduleInsertDto.getUser_nm();
     }
 
     public void update(ScheduleUpdateDto scheduleUpdateDto) {
         this.title = scheduleUpdateDto.getTitle();
         this.content = scheduleUpdateDto.getContent();
-        this.user_nm = scheduleUpdateDto.getUser_nm();
     }
 
-    public void addCommentList(Comment comment) {
-        this.commentList.add(comment);
-        comment.setSchedule(this); // 외래 키(연관 관계) 설정
+    public void addScheduleMappingList(ScheduleMapping scheduleMapping) {
+        this.scheduleMappingList.add(scheduleMapping);
+        scheduleMapping.addSchedule(this); // 외래 키(연관 관계) 설정
     }
 }

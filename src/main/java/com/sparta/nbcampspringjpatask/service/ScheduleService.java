@@ -5,6 +5,9 @@ import com.sparta.nbcampspringjpatask.dto.ScheduleSelectAllPagingDto;
 import com.sparta.nbcampspringjpatask.dto.ScheduleSelectDto;
 import com.sparta.nbcampspringjpatask.dto.ScheduleUpdateDto;
 import com.sparta.nbcampspringjpatask.entity.Schedule;
+import com.sparta.nbcampspringjpatask.entity.ScheduleMapping;
+import com.sparta.nbcampspringjpatask.entity.User;
+import com.sparta.nbcampspringjpatask.repository.ScheduleMappingRepositry;
 import com.sparta.nbcampspringjpatask.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,10 +21,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserService userService;
+    private final ScheduleMappingRepositry scheduleMappingRepositry;
 
     public ScheduleSelectDto createSchedule(ScheduleInsertDto scheduleInsertDto) {
         Schedule schedule = new Schedule(scheduleInsertDto);
-        return new ScheduleSelectDto(scheduleRepository.save(schedule));
+        Schedule saveSchedule = scheduleRepository.save(schedule);
+
+        for (Long l : scheduleInsertDto.getUserList()) {
+            ScheduleMapping scheduleMapping = new ScheduleMapping();
+            User user = userService.findById(l);
+            scheduleMapping.update(schedule , user);
+            scheduleMappingRepositry.save(scheduleMapping);
+        }
+
+        return new ScheduleSelectDto(saveSchedule);
     }
 
     public ScheduleSelectDto selectSchedule(Long id) {
@@ -31,6 +45,19 @@ public class ScheduleService {
     @Transactional
     public ScheduleSelectDto updateSchedule(Long id , ScheduleUpdateDto scheduleUpdateDto) {
         Schedule schedule = findById(id);
+
+        scheduleMappingRepositry.deleteByScheduleId(id);
+
+        schedule.getScheduleMappingList().clear();
+
+        for (Long l : scheduleUpdateDto.getUserList()) {
+            ScheduleMapping scheduleMapping = new ScheduleMapping();
+            User user = userService.findById(l);
+            scheduleMapping.update(schedule , user);
+            schedule.addScheduleMappingList(scheduleMapping);
+            scheduleMappingRepositry.save(scheduleMapping);
+        }
+
         schedule.update(scheduleUpdateDto);
         return new ScheduleSelectDto(schedule);
     }

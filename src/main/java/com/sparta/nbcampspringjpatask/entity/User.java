@@ -25,6 +25,10 @@ public class User extends Timestamped{
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
+    private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
+
+
     public User(UserInsertDto userInsertDto) {
         this.name = userInsertDto.getName();
         this.email = userInsertDto.getEmail();
