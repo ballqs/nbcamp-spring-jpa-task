@@ -3,6 +3,7 @@ package com.sparta.nbcampspringjpatask.controller;
 import com.sparta.nbcampspringjpatask.dto.*;
 import com.sparta.nbcampspringjpatask.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<ResponseDto<UserSignupResponseDto>> createUser(@RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
+    public ResponseEntity<ResponseDto<UserSignupResponseDto>> createUser(@Valid @RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto , res) , "성공적으로 등록완료했습니다."));
     }
 
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public ResponseEntity<ResponseDto<UserSelectDto>> updateUser(@PathVariable Long id , @RequestBody UserUpdateDto userUpdateDto) {
+    public ResponseEntity<ResponseDto<UserSelectDto>> updateUser(@PathVariable Long id , @Valid @RequestBody UserUpdateDto userUpdateDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.updateUser(id , userUpdateDto) , "성공적으로 수정완료했습니다."));
     }
 
@@ -45,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<ResponseDto<UserLoginResponseDto>> loginUser(@RequestBody UserLoginRequestDto userLoginRequestDto) {
+    public ResponseEntity<ResponseDto<UserLoginResponseDto>> loginUser(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.loginUser(userLoginRequestDto) , "성공적으로 로그인했습니다."));
     }
 }

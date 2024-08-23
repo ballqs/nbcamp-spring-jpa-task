@@ -5,6 +5,7 @@ import com.sparta.nbcampspringjpatask.dto.CommentSelectDto;
 import com.sparta.nbcampspringjpatask.dto.CommentUpdateDto;
 import com.sparta.nbcampspringjpatask.dto.ResponseDto;
 import com.sparta.nbcampspringjpatask.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/comments")
-    public ResponseEntity<ResponseDto<CommentSelectDto>> createComment(@RequestBody CommentInsertDto commentInsertDto) {
+    public ResponseEntity<ResponseDto<CommentSelectDto>> createComment(@Valid @RequestBody CommentInsertDto commentInsertDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), commentService.createComment(commentInsertDto) , "성공적으로 등록완료했습니다."));
     }
 
@@ -35,7 +36,7 @@ public class CommentController {
     }
 
     @PatchMapping("/comments/{id}")
-    public ResponseEntity<ResponseDto<CommentSelectDto>> updateComment(@PathVariable Long id , @RequestBody CommentUpdateDto commentUpdateDto) {
+    public ResponseEntity<ResponseDto<CommentSelectDto>> updateComment(@PathVariable Long id , @Valid @RequestBody CommentUpdateDto commentUpdateDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), commentService.updateComment(id , commentUpdateDto) , "성공적으로 수정완료했습니다."));
     }
 

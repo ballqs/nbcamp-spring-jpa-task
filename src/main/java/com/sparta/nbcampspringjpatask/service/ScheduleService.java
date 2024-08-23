@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,7 +24,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ScheduleService {
@@ -58,7 +61,13 @@ public class ScheduleService {
 
         Schedule saveSchedule = scheduleRepository.save(schedule);
 
+        List<Long> list = new ArrayList<>();
         for (Long l : scheduleInsertDto.getUserList()) {
+            if (list.contains(l)) {
+                throw new DuplicateKeyException("이미 등록된 유저입니다.");
+            } else {
+                list.add(l);
+            }
             ScheduleMapping scheduleMapping = new ScheduleMapping();
             User user = userService.findById(l);
             scheduleMapping.update(schedule , user);
@@ -81,7 +90,13 @@ public class ScheduleService {
 
         schedule.getScheduleMappingList().clear();
 
+        List<Long> list = new ArrayList<>();
         for (Long l : scheduleUpdateDto.getUserList()) {
+            if (list.contains(l)) {
+                throw new DuplicateKeyException("이미 등록된 유저입니다.");
+            } else {
+                list.add(l);
+            }
             ScheduleMapping scheduleMapping = new ScheduleMapping();
             User user = userService.findById(l);
             scheduleMapping.update(schedule , user);

@@ -2,6 +2,7 @@ package com.sparta.nbcampspringjpatask.controller;
 
 import com.sparta.nbcampspringjpatask.dto.*;
 import com.sparta.nbcampspringjpatask.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/schedules")
-    public ResponseEntity<ResponseDto<ScheduleSelectDto>> createSchedule(@RequestBody ScheduleInsertDto scheduleInsertDto) {
+    public ResponseEntity<ResponseDto<ScheduleSelectDto>> createSchedule(@Valid @RequestBody ScheduleInsertDto scheduleInsertDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.createSchedule(scheduleInsertDto) , "성공적으로 등록완료했습니다."));
     }
 
@@ -32,7 +33,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/schedules/{id}")
-    public ResponseEntity<ResponseDto<ScheduleSelectDto>> updateSchedule(@PathVariable Long id , @RequestBody ScheduleUpdateDto scheduleUpdateDto) {
+    public ResponseEntity<ResponseDto<ScheduleSelectDto>> updateSchedule(@PathVariable Long id , @Valid @RequestBody ScheduleUpdateDto scheduleUpdateDto) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.updateSchedule(id , scheduleUpdateDto) , "성공적으로 수정완료했습니다."));
     }
 
