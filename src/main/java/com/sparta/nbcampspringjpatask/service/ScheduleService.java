@@ -32,6 +32,7 @@ public class ScheduleService {
             ScheduleMapping scheduleMapping = new ScheduleMapping();
             User user = userService.findById(l);
             scheduleMapping.update(schedule , user);
+            saveSchedule.addScheduleMappingList(scheduleMapping);
             scheduleMappingRepositry.save(scheduleMapping);
         }
 

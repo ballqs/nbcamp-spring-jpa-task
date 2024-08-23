@@ -17,7 +17,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/signup")
     public ResponseEntity<ResponseDto<UserSignupDto>> createUser(@RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto , res) , "성공적으로 등록완료했습니다."));
     }
@@ -42,5 +42,10 @@ public class UserController {
     public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "" , "성공적으로 삭제완료했습니다."));
+    }
+
+    @PostMapping("/users/login")
+    public ResponseEntity<ResponseDto<UserLoginResponseDto>> loginUser(@RequestBody UserLoginRequestDto userLoginRequestDto) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.loginUser(userLoginRequestDto) , "성공적으로 로그인했습니다."));
     }
 }
