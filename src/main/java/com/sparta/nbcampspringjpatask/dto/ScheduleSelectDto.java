@@ -13,6 +13,7 @@ public class ScheduleSelectDto {
     private Long id;
     private String title;
     private String content;
+    private String weather;
     private Long userId;
     private String userNm;
     private String userEmail;
@@ -26,6 +27,7 @@ public class ScheduleSelectDto {
         this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
+        this.weather = schedule.getWeather();
         this.userId = schedule.getUser().getId();
         this.userNm = schedule.getUser().getName();
         this.userEmail = schedule.getUser().getEmail();

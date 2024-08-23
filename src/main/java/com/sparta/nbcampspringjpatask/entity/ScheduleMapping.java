@@ -12,11 +12,11 @@ public class ScheduleMapping extends Timestamped{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id")
+    @JoinColumn(name = "schedule_id" , nullable = false)
     private Schedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id" , nullable = false)
     private User user;
 
     public void update(Schedule schedule , User user) {

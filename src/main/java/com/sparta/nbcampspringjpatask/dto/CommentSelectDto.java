@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 public class CommentSelectDto {
     private Long id;
     private String content;
-    private String user_nm;
+    private String userNm;
     private Long scheduleId;
     private String scheduleTitle;
     private String scheduleContent;
@@ -19,7 +19,7 @@ public class CommentSelectDto {
     public CommentSelectDto(Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
-        this.user_nm = comment.getUser().getName();
+        this.userNm = comment.getUser().getName();
         this.scheduleId = comment.getSchedule().getId();
         this.scheduleTitle = comment.getSchedule().getTitle();
         this.scheduleContent = comment.getSchedule().getContent();
