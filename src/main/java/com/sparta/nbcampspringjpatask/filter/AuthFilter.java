@@ -3,6 +3,7 @@ package com.sparta.nbcampspringjpatask.filter;
 
 import com.sparta.nbcampspringjpatask.jwt.JwtUtil;
 import com.sparta.nbcampspringjpatask.jwt.JwtValidationResult;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,8 @@ public class AuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
+        String method = request.getMethod();
+
         if (StringUtils.hasText(url) &&
                 (url.equals("/api/v1/users/signup") || url.equals("/api/v1/users/login"))) {
             filterChain.doFilter(request, response);
@@ -45,6 +48,16 @@ public class AuthFilter extends OncePerRequestFilter {
                 if (Objects.nonNull(validationResult)) {
                     handleException(response, validationResult.getMessage(), validationResult.getStatusCode());
                 } else {
+                    Claims info = jwtUtil.getUserInfoFromToken(token);
+                    String authority = (String) info.get(jwtUtil.AUTHORIZATION_KEY);
+
+                    if (method.equals("PATCH") || method.equals("DELETE")) {
+                        if (!authority.equals("ADMIN")) {
+                            handleException(response, "권한이 없습니다.", HttpServletResponse.SC_FORBIDDEN);
+                            return;
+                        }
+                    }
+
                     filterChain.doFilter(request, response); // 다음 Filter 로 이동
                 }
             } else {

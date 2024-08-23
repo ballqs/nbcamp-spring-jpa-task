@@ -1,5 +1,6 @@
 package com.sparta.nbcampspringjpatask.jwt;
 
+import com.sparta.nbcampspringjpatask.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -44,10 +45,8 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String value) {
+    public String createToken(String value , UserRoleEnum role) {
         Date date = new Date();
-        Claims claims = Jwts.claims();
-        claims.put(AUTHORIZATION_KEY , value);
 
         // setSubject 토큰의 용도를 명시한다. (디코딩했을때 값이 제대로 나오면 인가난것)
         // ㄴunique한 값이 일반적으로 들어감
@@ -59,8 +58,7 @@ public class JwtUtil {
         return BEARER_PREFIX +
                 Jwts.builder()
                     .setSubject(value) // 사용자 식별자값(ID)
-                    .setClaims(claims)
-//                    .claim(AUTHORIZATION_KEY, role) // 사용자 권한 Map<Key , Value>
+                    .claim(AUTHORIZATION_KEY, role) // 사용자 권한 Map<Key , Value>
                     .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                     .setIssuedAt(date) // 발급일
                     .signWith(key, signatureAlgorithm) // 암호화 알고리즘

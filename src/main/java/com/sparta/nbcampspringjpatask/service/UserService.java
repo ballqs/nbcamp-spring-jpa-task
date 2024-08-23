@@ -3,6 +3,7 @@ package com.sparta.nbcampspringjpatask.service;
 import com.sparta.nbcampspringjpatask.component.BCryptEncryptor;
 import com.sparta.nbcampspringjpatask.dto.*;
 import com.sparta.nbcampspringjpatask.entity.User;
+import com.sparta.nbcampspringjpatask.entity.UserRoleEnum;
 import com.sparta.nbcampspringjpatask.jwt.JwtUtil;
 import com.sparta.nbcampspringjpatask.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +23,9 @@ public class UserService {
     private final BCryptEncryptor bCryptEncryptor;
     private final JwtUtil jwtUtil;
 
-    public UserSignupDto createUser(UserInsertDto userInsertDto , HttpServletResponse res) {
+    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
+    public UserSignupResponseDto createUser(UserInsertDto userInsertDto , HttpServletResponse res) {
         String name = userInsertDto.getName();
         String email = userInsertDto.getEmail();
 
@@ -39,13 +42,21 @@ public class UserService {
         // 비밀번호 암호화
         String pw = bCryptEncryptor.encode(userInsertDto.getPw());
 
-        User user = new User(name , email , pw);
+        // 사용자 ROLE 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (userInsertDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(userInsertDto.getAdminToken())) {
+                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+            }
+            role = UserRoleEnum.ADMIN;
+        }
+
+        User user = new User(name , email , pw , role);
 
         // JWT 생성 및 헤더에 저장 후 Response 객체에 추가
-        String token = jwtUtil.createToken(name);
-//        jwtUtil.addJwtToHeader(token , res);
+        String token = jwtUtil.createToken(name , role);
 
-        return new UserSignupDto(userRepository.save(user) , token);
+        return new UserSignupResponseDto(userRepository.save(user) , token);
     }
 
     public UserSelectDto selectUser(Long id) {
@@ -75,7 +86,8 @@ public class UserService {
         if (!bCryptEncryptor.matches(userLoginRequestDto.getPw() , user.get().getPw())) {
             throw new IllegalArgumentException("비밀번호가 맞지 않습니다.");
         }
-        String token = jwtUtil.createToken(user.get().getEmail());
+
+        String token = jwtUtil.createToken(user.get().getEmail() , user.get().getRole());
         return new UserLoginResponseDto(token);
     }
 

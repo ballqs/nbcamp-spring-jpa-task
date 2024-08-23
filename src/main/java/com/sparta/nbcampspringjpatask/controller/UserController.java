@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<ResponseDto<UserSignupDto>> createUser(@RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
+    public ResponseEntity<ResponseDto<UserSignupResponseDto>> createUser(@RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto , res) , "성공적으로 등록완료했습니다."));
     }
 

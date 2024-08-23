@@ -23,6 +23,9 @@ public class User extends Timestamped{
     private String email;
     @Column(name = "pw" , nullable = false)
     private String pw;
+    @Column(name = "role" , nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
 
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
@@ -30,10 +33,11 @@ public class User extends Timestamped{
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
 
-    public User(String name , String email , String pw) {
+    public User(String name , String email , String pw , UserRoleEnum role) {
         this.name = name;
         this.email = email;
         this.pw = pw;
+        this.role = role;
     }
 
     public void update(UserUpdateDto userUpdateDto) {

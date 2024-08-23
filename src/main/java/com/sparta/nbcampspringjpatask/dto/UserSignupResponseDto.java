@@ -2,13 +2,11 @@ package com.sparta.nbcampspringjpatask.dto;
 
 import com.sparta.nbcampspringjpatask.entity.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
 
 @Getter
-public class UserSignupDto {
+public class UserSignupResponseDto {
     private Long id;
     private String name;
     private String email;
@@ -16,7 +14,7 @@ public class UserSignupDto {
     private String modifiedAt;
     private String token;
 
-    public UserSignupDto(User user , String token) {
+    public UserSignupResponseDto(User user , String token) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
