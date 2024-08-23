@@ -28,6 +28,9 @@ public class User extends Timestamped{
     private UserRoleEnum role;
 
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
+    private List<Schedule> scheduleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})

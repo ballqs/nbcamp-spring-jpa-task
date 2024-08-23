@@ -22,15 +22,20 @@ public class Schedule extends Timestamped{
     @Column(name = "content", nullable = false, length = 500)
     private String content;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
 
-    public Schedule(ScheduleInsertDto scheduleInsertDto) {
+    public Schedule(ScheduleInsertDto scheduleInsertDto , User user) {
         this.title = scheduleInsertDto.getTitle();
         this.content = scheduleInsertDto.getContent();
+        this.user = user;
     }
 
     public void update(ScheduleUpdateDto scheduleUpdateDto) {

@@ -9,6 +9,7 @@ import com.sparta.nbcampspringjpatask.entity.ScheduleMapping;
 import com.sparta.nbcampspringjpatask.entity.User;
 import com.sparta.nbcampspringjpatask.repository.ScheduleMappingRepositry;
 import com.sparta.nbcampspringjpatask.repository.ScheduleRepository;
+import com.sparta.nbcampspringjpatask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,12 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
     private final UserService userService;
+
+    private final ScheduleRepository scheduleRepository;
     private final ScheduleMappingRepositry scheduleMappingRepositry;
 
     public ScheduleSelectDto createSchedule(ScheduleInsertDto scheduleInsertDto) {
-        Schedule schedule = new Schedule(scheduleInsertDto);
+        User authorUser = userService.findById(scheduleInsertDto.getUserId());
+        Schedule schedule = new Schedule(scheduleInsertDto , authorUser);
+
         Schedule saveSchedule = scheduleRepository.save(schedule);
 
         for (Long l : scheduleInsertDto.getUserList()) {
@@ -77,4 +81,6 @@ public class ScheduleService {
         Schedule schedule = findById(id);
         scheduleRepository.delete(schedule);
     }
+
+
 }
