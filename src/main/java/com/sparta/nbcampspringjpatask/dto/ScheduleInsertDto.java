@@ -19,6 +19,6 @@ public class ScheduleInsertDto {
     @Positive
     @NotNull
     private Long userId;
-    @NotBlank
+    @NotNull
     private List<Long> userList;
 }

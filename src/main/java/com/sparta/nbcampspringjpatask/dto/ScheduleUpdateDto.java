@@ -1,6 +1,7 @@
 package com.sparta.nbcampspringjpatask.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
@@ -14,6 +15,6 @@ public class ScheduleUpdateDto {
     @Size(max=500, min=1)
     @NotBlank
     private String content;
-    @NotBlank
+    @NotNull
     private List<Long> userList;
 }
