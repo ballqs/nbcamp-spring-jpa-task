@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -63,18 +64,17 @@ public class UserService {
         return new UserSelectDto(findById(id));
     }
 
+    @Transactional(readOnly = true)
     public List<UserSelectDto> selectAllUser() {
         return userRepository.findAll().stream().map(UserSelectDto::new).toList();
     }
 
-    @Transactional
     public UserSelectDto updateUser(Long id , UserUpdateDto userUpdateDto) {
         User user = findById(id);
         user.update(userUpdateDto);
         return new UserSelectDto(user);
     }
 
-    @Transactional
     public void deleteUser(Long id) {
         User user = findById(id);
         userRepository.delete(user);
@@ -91,6 +91,7 @@ public class UserService {
         return new UserLoginResponseDto(token);
     }
 
+    @Transactional(readOnly = true)
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new NullPointerException("해당 유저는 존재하지 않습니다."));
     }

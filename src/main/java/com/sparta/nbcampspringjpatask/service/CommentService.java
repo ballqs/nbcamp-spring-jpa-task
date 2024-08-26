@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -37,23 +38,23 @@ public class CommentService {
         return new CommentSelectDto(findById(id));
     }
 
+    @Transactional(readOnly = true)
     public List<CommentSelectDto> selectAllComment() {
         return commentRepository.findAll().stream().map(CommentSelectDto::new).toList();
     }
 
-    @Transactional
     public CommentSelectDto updateComment(Long id , CommentUpdateDto commentUpdateDto) {
         Comment comment = findById(id);
         comment.update(commentUpdateDto);
         return new CommentSelectDto(comment);
     }
 
-    @Transactional
     public void deleteComment(Long id) {
         Comment comment = findById(id);
         commentRepository.delete(comment);
     }
 
+    @Transactional(readOnly = true)
     public Comment findById(Long id) {
         return commentRepository.findById(id).orElseThrow(() -> new NullPointerException("선택한 댓글은 존재하지 않습니다."));
     }

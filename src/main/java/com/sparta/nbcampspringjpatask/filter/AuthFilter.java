@@ -46,21 +46,27 @@ public class AuthFilter extends OncePerRequestFilter {
                 // 토큰 검증
                 JwtValidationResult validationResult = jwtUtil.validateToken(token);
                 if (Objects.nonNull(validationResult)) {
+                    log.error("토큰에 문제가 있습니다.");
                     handleException(response, validationResult.getMessage(), validationResult.getStatusCode());
                 } else {
+                    log.info("토큰 검증 성공");
                     Claims info = jwtUtil.getUserInfoFromToken(token);
                     String authority = (String) info.get(jwtUtil.AUTHORIZATION_KEY);
 
                     if (method.equals("PATCH") || method.equals("DELETE")) {
                         if (!authority.equals("ADMIN")) {
+                            log.error("권한이 없습니다.");
                             handleException(response, "권한이 없습니다.", HttpServletResponse.SC_FORBIDDEN);
                             return;
                         }
                     }
 
-                    filterChain.doFilter(request, response); // 다음 Filter 로 이동
+                    // 해당 필터는 검증 완료
+                    log.info("로그인 성공");
+                    filterChain.doFilter(request, response);
                 }
             } else {
+                log.error("토큰이 없습니다.");
                 handleException(response, "토큰이 없습니다.", HttpServletResponse.SC_BAD_REQUEST);
             }
         }

@@ -31,7 +31,7 @@ public class Schedule extends Timestamped{
     @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
+    @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE} , orphanRemoval = true)
     private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
 
     public Schedule(ScheduleInsertDto scheduleInsertDto , User user , String weather) {

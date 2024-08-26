@@ -25,10 +25,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class ScheduleService {
@@ -56,19 +55,17 @@ public class ScheduleService {
 
         Schedule saveSchedule = scheduleRepository.save(schedule);
 
-        List<Long> list = new ArrayList<>();
-        for (Long l : scheduleInsertDto.getUserList()) {
-            if (list.contains(l)) {
-                throw new DuplicateKeyException("이미 등록된 유저입니다.");
-            } else {
-                list.add(l);
-            }
+        Set<Long> userList = new HashSet<>(scheduleInsertDto.getUserList());
+
+        List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
+        for (Long userId : userList) {
             ScheduleMapping scheduleMapping = new ScheduleMapping();
-            User user = userService.findById(l);
+            User user = userService.findById(userId);
             scheduleMapping.update(schedule , user);
             saveSchedule.addScheduleMappingList(scheduleMapping);
-            scheduleMappingRepositry.save(scheduleMapping);
+            scheduleMappingList.add(scheduleMapping);
         }
+        scheduleMappingRepositry.saveAll(scheduleMappingList);
 
         return new ScheduleSelectDto(saveSchedule);
     }
@@ -77,42 +74,37 @@ public class ScheduleService {
         return new ScheduleSelectDto(findById(id));
     }
 
-    @Transactional
     public ScheduleSelectDto updateSchedule(Long id , ScheduleUpdateDto scheduleUpdateDto) {
         Schedule schedule = findById(id);
 
-        scheduleMappingRepositry.deleteByScheduleId(id);
-
         schedule.getScheduleMappingList().clear();
 
-        List<Long> list = new ArrayList<>();
-        for (Long l : scheduleUpdateDto.getUserList()) {
-            if (list.contains(l)) {
-                throw new DuplicateKeyException("이미 등록된 유저입니다.");
-            } else {
-                list.add(l);
-            }
+        Set<Long> userList = new HashSet<>(scheduleUpdateDto.getUserList());
+        List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
+        for (Long userId : userList) {
             ScheduleMapping scheduleMapping = new ScheduleMapping();
-            User user = userService.findById(l);
+            User user = userService.findById(userId);
             scheduleMapping.update(schedule , user);
             schedule.addScheduleMappingList(scheduleMapping);
-            scheduleMappingRepositry.save(scheduleMapping);
+            scheduleMappingList.add(scheduleMapping);
         }
+        scheduleMappingRepositry.saveAll(scheduleMappingList);
 
         schedule.update(scheduleUpdateDto);
         return new ScheduleSelectDto(schedule);
     }
 
+    @Transactional(readOnly = true)
     public Schedule findById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(() -> new NullPointerException("선택한 일정은 존재하지 않습니다."));
     }
 
+    @Transactional(readOnly = true)
     public Page<ScheduleSelectAllPagingDto> selectAllPagingSchedule(int page , int size) {
         PageRequest pageRequest = PageRequest.of(page - 1 , size , Sort.by("modifiedAt").descending());
         return scheduleRepository.findAll(pageRequest).map(ScheduleSelectAllPagingDto::new);
     }
 
-    @Transactional
     public void deleteSchedule(Long id) {
         Schedule schedule = findById(id);
         scheduleRepository.delete(schedule);
