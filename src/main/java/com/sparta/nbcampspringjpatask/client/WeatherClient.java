@@ -1,17 +1,17 @@
-package com.sparta.nbcampspringjpatask.service;
+package com.sparta.nbcampspringjpatask.client;
 
 import com.sparta.nbcampspringjpatask.dto.WeatherResponseDto;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Service
-public class RestTemplateService {
+@Component
+public class WeatherClient {
 
     private final RestTemplate restTemplate;
 
-    public RestTemplateService(RestTemplateBuilder builder) {
+    public WeatherClient(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
     }
 

@@ -1,18 +1,17 @@
 package com.sparta.nbcampspringjpatask.service;
 
-import com.sparta.nbcampspringjpatask.component.BCryptEncryptor;
+import com.sparta.nbcampspringjpatask.support.BCryptEncryptor;
 import com.sparta.nbcampspringjpatask.dto.*;
 import com.sparta.nbcampspringjpatask.entity.User;
 import com.sparta.nbcampspringjpatask.entity.UserRoleEnum;
 import com.sparta.nbcampspringjpatask.jwt.JwtUtil;
 import com.sparta.nbcampspringjpatask.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Transactional
@@ -26,18 +25,16 @@ public class UserService {
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
-    public UserSignupResponseDto createUser(UserInsertDto userInsertDto , HttpServletResponse res) {
+    public UserSignupResponseDto createUser(UserInsertDto userInsertDto) {
         String name = userInsertDto.getName();
         String email = userInsertDto.getEmail();
 
-        Optional<User> checkUserName = userRepository.findByName(name);
-        if (checkUserName.isPresent()) {
-            throw new DuplicateKeyException("중복된 사용자가 존재합니다.");
+        if (userRepository.existsByName(name)) {
+            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
-        Optional<User> checkUserEmail = userRepository.findByEmail(email);
-        if (checkUserEmail.isPresent()) {
-            throw new DuplicateKeyException("중복된 Email입니다.");
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("중복된 Email입니다.");
         }
 
         // 비밀번호 암호화
@@ -60,23 +57,23 @@ public class UserService {
         return new UserSignupResponseDto(userRepository.save(user) , token);
     }
 
-    public UserSelectDto selectUser(Long id) {
-        return new UserSelectDto(findById(id));
+    public UserSelectDto getUser(Long id) {
+        return new UserSelectDto(userRepository.findByIdOrElseThrow(id));
     }
 
     @Transactional(readOnly = true)
-    public List<UserSelectDto> selectAllUser() {
+    public List<UserSelectDto> getUsers() {
         return userRepository.findAll().stream().map(UserSelectDto::new).toList();
     }
 
     public UserSelectDto updateUser(Long id , UserUpdateDto userUpdateDto) {
-        User user = findById(id);
-        user.update(userUpdateDto);
+        User user = userRepository.findByIdOrElseThrow(id);
+        user.update(userUpdateDto.getName());
         return new UserSelectDto(user);
     }
 
-    public void deleteUser(Long id) {
-        User user = findById(id);
+    public void removeUser(Long id) {
+        User user = userRepository.findByIdOrElseThrow(id);
         userRepository.delete(user);
     }
 
@@ -92,7 +89,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new NullPointerException("해당 유저는 존재하지 않습니다."));
+    public User getUserEntity(Long id) {
+        return userRepository.findByIdOrElseThrow(id);
     }
 }

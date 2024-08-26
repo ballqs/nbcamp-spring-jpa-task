@@ -22,14 +22,14 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules/{id}")
-    public ResponseEntity<ResponseDto<ScheduleSelectDto>> selectSchedule(@PathVariable Long id) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.selectSchedule(id) , "성공적으로 조회완료했습니다."));
+    public ResponseEntity<ResponseDto<ScheduleSelectDto>> getSchedule(@PathVariable Long id) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.getSchedule(id) , "성공적으로 조회완료했습니다."));
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<ResponseDto<Page<ScheduleSelectAllPagingDto>>> selectAllPagingSchedule(@RequestParam(defaultValue = "1") int page ,
+    public ResponseEntity<ResponseDto<Page<ScheduleSelectAllPagingDto>>> search(@RequestParam(defaultValue = "1") int page ,
                                                                                                  @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.selectAllPagingSchedule(page , size) , "성공적으로 조회완료했습니다."));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), scheduleService.search(page , size) , "성공적으로 조회완료했습니다."));
     }
 
     @PatchMapping("/schedules/{id}")
@@ -38,8 +38,8 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/schedules/{id}")
-    public ResponseEntity<ResponseDto<String>> deleteSchedule(@PathVariable Long id) {
-        scheduleService.deleteSchedule(id);
+    public ResponseEntity<ResponseDto<String>> removeSchedule(@PathVariable Long id) {
+        scheduleService.removeSchedule(id);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "" , "성공적으로 삭제완료했습니다."));
     }
 }

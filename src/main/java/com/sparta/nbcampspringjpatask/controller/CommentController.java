@@ -26,13 +26,13 @@ public class CommentController {
     }
 
     @GetMapping("/comments/{id}")
-    public ResponseEntity<ResponseDto<CommentSelectDto>> selectComment(@PathVariable Long id) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), commentService.selectComment(id) , "성공적으로 조회완료했습니다."));
+    public ResponseEntity<ResponseDto<CommentSelectDto>> getComment(@PathVariable Long id) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), commentService.getComment(id) , "성공적으로 조회완료했습니다."));
     }
 
     @GetMapping("/comments")
-    public ResponseEntity<ResponseDto<List<CommentSelectDto>>> selectAllComment() {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), commentService.selectAllComment() , "성공적으로 조회완료했습니다."));
+    public ResponseEntity<ResponseDto<List<CommentSelectDto>>> getComments() {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), commentService.getComments() , "성공적으로 조회완료했습니다."));
     }
 
     @PatchMapping("/comments/{id}")
@@ -41,8 +41,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{id}")
-    public ResponseEntity<ResponseDto<String>> deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    public ResponseEntity<ResponseDto<String>> removeComment(@PathVariable Long id) {
+        commentService.removeComment(id);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "" , "성공적으로 삭제완료했습니다."));
     }
 }

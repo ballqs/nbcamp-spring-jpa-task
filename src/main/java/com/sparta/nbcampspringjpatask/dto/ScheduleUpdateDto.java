@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 public class ScheduleUpdateDto {
@@ -16,5 +16,5 @@ public class ScheduleUpdateDto {
     @NotBlank
     private String content;
     @NotNull
-    private List<Long> userList;
+    private Set<Long> userList;
 }

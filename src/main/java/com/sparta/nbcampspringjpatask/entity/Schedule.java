@@ -1,7 +1,5 @@
 package com.sparta.nbcampspringjpatask.entity;
 
-import com.sparta.nbcampspringjpatask.dto.ScheduleInsertDto;
-import com.sparta.nbcampspringjpatask.dto.ScheduleUpdateDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +11,17 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name = "schedule")
-public class Schedule extends Timestamped{
+public class Schedule extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "title" , nullable = false)
     private String title;
+
     @Column(name = "content", nullable = false, length = 500)
     private String content;
+
     @Column(name = "weather" , nullable = false)
     private String weather;
 
@@ -28,22 +29,22 @@ public class Schedule extends Timestamped{
     @JoinColumn(name = "user_id" , nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE})
+    @OneToMany(mappedBy = "schedule" , cascade = CascadeType.REMOVE)
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "schedule" , cascade = {CascadeType.PERSIST , CascadeType.REMOVE} , orphanRemoval = true)
+    @OneToMany(mappedBy = "schedule" , cascade = CascadeType.REMOVE , orphanRemoval = true)
     private List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
 
-    public Schedule(ScheduleInsertDto scheduleInsertDto , User user , String weather) {
-        this.title = scheduleInsertDto.getTitle();
-        this.content = scheduleInsertDto.getContent();
+    public Schedule(String title , String content , User user , String weather) {
+        this.title = title;
+        this.content = content;
         this.user = user;
         this.weather = weather;
     }
 
-    public void update(ScheduleUpdateDto scheduleUpdateDto) {
-        this.title = scheduleUpdateDto.getTitle();
-        this.content = scheduleUpdateDto.getContent();
+    public void update(String title , String content) {
+        this.title = title;
+        this.content = content;
     }
 
     public void addScheduleMappingList(ScheduleMapping scheduleMapping) {

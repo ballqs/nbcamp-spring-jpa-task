@@ -2,7 +2,6 @@ package com.sparta.nbcampspringjpatask.controller;
 
 import com.sparta.nbcampspringjpatask.dto.*;
 import com.sparta.nbcampspringjpatask.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,18 +18,18 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<ResponseDto<UserSignupResponseDto>> createUser(@Valid @RequestBody UserInsertDto userInsertDto , HttpServletResponse res) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto , res) , "성공적으로 등록완료했습니다."));
+    public ResponseEntity<ResponseDto<UserSignupResponseDto>> createUser(@Valid @RequestBody UserInsertDto userInsertDto) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.createUser(userInsertDto) , "성공적으로 등록완료했습니다."));
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<ResponseDto<UserSelectDto>> selectUser(@PathVariable Long id) {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.selectUser(id) , "성공적으로 조회완료했습니다."));
+    public ResponseEntity<ResponseDto<UserSelectDto>> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.getUser(id) , "성공적으로 조회완료했습니다."));
     }
 
     @GetMapping("/users")
-    public ResponseEntity<ResponseDto<List<UserSelectDto>>> selectAllUser() {
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.selectAllUser() , "성공적으로 조회완료했습니다."));
+    public ResponseEntity<ResponseDto<List<UserSelectDto>>> getUsers() {
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userService.getUsers() , "성공적으로 조회완료했습니다."));
     }
 
     @PatchMapping("/users/{id}")
@@ -40,8 +39,8 @@ public class UserController {
 
     // 삭제
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<ResponseDto<String>> removeUser(@PathVariable Long id) {
+        userService.removeUser(id);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "" , "성공적으로 삭제완료했습니다."));
     }
 

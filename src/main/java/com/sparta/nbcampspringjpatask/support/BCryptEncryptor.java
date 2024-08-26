@@ -1,4 +1,4 @@
-package com.sparta.nbcampspringjpatask.component;
+package com.sparta.nbcampspringjpatask.support;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableCaching
 @EnableJpaAuditing
 @SpringBootApplication
-public class NbcampSpringJpaTaskApplication {
+public class Application {
 
     public static void main(String[] args) {
         // .env 파일 로드
@@ -24,7 +24,7 @@ public class NbcampSpringJpaTaskApplication {
         System.setProperty("DB_PW", dotenv.get("DB_PW"));
         System.setProperty("JWT_KEY", dotenv.get("JWT_KEY"));
 
-        SpringApplication.run(NbcampSpringJpaTaskApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

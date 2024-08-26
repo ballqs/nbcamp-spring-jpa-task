@@ -1,8 +1,8 @@
 package com.sparta.nbcampspringjpatask.filter;
 
 
+import com.sparta.nbcampspringjpatask.entity.UserRoleEnum;
 import com.sparta.nbcampspringjpatask.jwt.JwtUtil;
-import com.sparta.nbcampspringjpatask.jwt.JwtValidationResult;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,13 +10,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Slf4j(topic = "AuthFilter")
 @RequiredArgsConstructor
@@ -31,52 +33,43 @@ public class AuthFilter extends OncePerRequestFilter {
         String url = request.getRequestURI();
         String method = request.getMethod();
 
-        if (StringUtils.hasText(url) &&
-                (url.equals("/api/v1/users/signup") || url.equals("/api/v1/users/login"))) {
-            filterChain.doFilter(request, response);
-        } else {
+        if (Strings.isNotBlank(url) && validateNotPublicUrl(url)) {
             // 나머지 API 요청은 인증 처리 진행
             // 토큰 확인
             String tokenValue = jwtUtil.getTokenFromRequest(request);
 
-            if (StringUtils.hasText(tokenValue)) { // 토큰이 존재하면 검증 시작
-                // JWT 토큰 substring
-                String token = jwtUtil.substringToken(tokenValue);
-
+            if (Strings.isNotBlank(tokenValue)) { // 토큰이 존재하면 검증 시작
                 // 토큰 검증
-                JwtValidationResult validationResult = jwtUtil.validateToken(token);
-                if (Objects.nonNull(validationResult)) {
-                    log.error("토큰에 문제가 있습니다.");
-                    handleException(response, validationResult.getMessage(), validationResult.getStatusCode());
+                String token = jwtUtil.substringToken(tokenValue);
+                if (!jwtUtil.validateToken(token)) {
+                    log.error("인증 실패");
+                    // Servlet 영역에서 처리하는 방법은 아래와 같음
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "인증에 실패했습니다.");
+                    // throw 처리하는 경우는 서버의 영역
+                    // throw new ResponseStatusException(HttpStatus.UNAUTHORIZED , "인증에 실패했습니다.");
                 } else {
                     log.info("토큰 검증 성공");
                     Claims info = jwtUtil.getUserInfoFromToken(token);
                     String authority = (String) info.get(jwtUtil.AUTHORIZATION_KEY);
 
-                    if (method.equals("PATCH") || method.equals("DELETE")) {
-                        if (!authority.equals("ADMIN")) {
+                    if (method.equals(HttpMethod.PATCH.name()) || method.equals(HttpMethod.DELETE.name())) {
+                        if (!authority.equals(UserRoleEnum.ADMIN.name())) {
                             log.error("권한이 없습니다.");
-                            handleException(response, "권한이 없습니다.", HttpServletResponse.SC_FORBIDDEN);
-                            return;
+                            // 인증에 성공했지만 인가에 실패한 경우
+                            throw new ResponseStatusException(HttpStatus.FORBIDDEN , "권한이 없습니다.");
                         }
                     }
-
-                    // 해당 필터는 검증 완료
-                    log.info("로그인 성공");
-                    filterChain.doFilter(request, response);
                 }
             } else {
                 log.error("토큰이 없습니다.");
-                handleException(response, "토큰이 없습니다.", HttpServletResponse.SC_BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "토큰이 없습니다.");
             }
         }
+
+        filterChain.doFilter(request, response);
     }
 
-    private void handleException(HttpServletResponse response, String message, int statusCode) throws IOException {
-        response.setStatus(statusCode);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"error\": \"" + message + "\", \"status\": " + statusCode + "}");
-        log.error("AuthFilter Error: {}", message);
+    private boolean validateNotPublicUrl(String url) {
+        return !(url.equals("/api/v1/users/signup") || url.equals("/api/v1/users/login"));
     }
 }

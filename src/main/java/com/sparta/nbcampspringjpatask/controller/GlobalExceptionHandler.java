@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,13 +19,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDto<>(HttpStatus.UNAUTHORIZED.value() , "" , e.getMessage()));
     }
 
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity<ResponseDto<String>> IllegalStateHandle(IllegalStateException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto<>(HttpStatus.BAD_REQUEST.value() , "" , e.getMessage()));
+    }
+
     @ExceptionHandler(value = NullPointerException.class)
     public ResponseEntity<ResponseDto<String>> nullPointerHandle(NullPointerException e){
         return ResponseEntity.badRequest().body(new ResponseDto<>(HttpStatus.BAD_REQUEST.value() , "" , e.getMessage()));
     }
 
-    @ExceptionHandler(value = DuplicateKeyException.class)
-    public ResponseEntity<ResponseDto<String>> duplicateKeyHandle(DuplicateKeyException e){
+    @ExceptionHandler(value = NoSuchElementException.class)
+    public ResponseEntity<ResponseDto<String>> noSuchElementHandle(NoSuchElementException e){
         return ResponseEntity.badRequest().body(new ResponseDto<>(HttpStatus.BAD_REQUEST.value() , "" , e.getMessage()));
     }
 

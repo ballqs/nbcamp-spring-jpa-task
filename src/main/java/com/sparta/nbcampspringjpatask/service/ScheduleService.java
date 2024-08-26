@@ -1,31 +1,25 @@
 package com.sparta.nbcampspringjpatask.service;
 
-import com.sparta.nbcampspringjpatask.dto.*;
+import com.sparta.nbcampspringjpatask.dto.ScheduleInsertDto;
+import com.sparta.nbcampspringjpatask.dto.ScheduleSelectAllPagingDto;
+import com.sparta.nbcampspringjpatask.dto.ScheduleSelectDto;
+import com.sparta.nbcampspringjpatask.dto.ScheduleUpdateDto;
 import com.sparta.nbcampspringjpatask.entity.Schedule;
 import com.sparta.nbcampspringjpatask.entity.ScheduleMapping;
 import com.sparta.nbcampspringjpatask.entity.User;
 import com.sparta.nbcampspringjpatask.repository.ScheduleMappingRepositry;
 import com.sparta.nbcampspringjpatask.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Transactional
 @RequiredArgsConstructor
@@ -35,78 +29,67 @@ public class ScheduleService {
     private final UserService userService;
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMappingRepositry scheduleMappingRepositry;
-    private final RestTemplateService restTemplateService;
+    private final WeatherService weatherService;
 
     public ScheduleSelectDto createSchedule(ScheduleInsertDto scheduleInsertDto) {
         // 오늘 날짜
         String formatedNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd"));
+        String weather = weatherService.getWeather(formatedNow);
 
-        // 날씨 정보 가져오기(같은 클래스 내에 캐싱중인 메서드를 호출하면 캐시가 동작안할수도 있어서 restTemplateService로 뺌)
-        WeatherResponseDto[] weatherResponseDto = restTemplateService.getWeatherData();
+        User authorUser = userService.getUserEntity(scheduleInsertDto.getUserId());
+        Schedule schedule = new Schedule(scheduleInsertDto.getTitle() , scheduleInsertDto.getContent() , authorUser , weather);
 
-        String weather = Arrays.stream(weatherResponseDto)
-                            .filter(it -> it.getDate().equals(formatedNow))
-                            .findFirst()
-                            .map(WeatherResponseDto::getWeather)
-                            .orElseThrow(() -> new NullPointerException("날짜 정보가 없습니다."));
-
-        User authorUser = userService.findById(scheduleInsertDto.getUserId());
-        Schedule schedule = new Schedule(scheduleInsertDto , authorUser , weather);
-
-        Schedule saveSchedule = scheduleRepository.save(schedule);
-
-        Set<Long> userList = new HashSet<>(scheduleInsertDto.getUserList());
+        scheduleRepository.save(schedule);
 
         List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
-        for (Long userId : userList) {
+        for (Long userId : scheduleInsertDto.getUserList()) {
             ScheduleMapping scheduleMapping = new ScheduleMapping();
-            User user = userService.findById(userId);
-            scheduleMapping.update(schedule , user);
-            saveSchedule.addScheduleMappingList(scheduleMapping);
-            scheduleMappingList.add(scheduleMapping);
-        }
-        scheduleMappingRepositry.saveAll(scheduleMappingList);
-
-        return new ScheduleSelectDto(saveSchedule);
-    }
-
-    public ScheduleSelectDto selectSchedule(Long id) {
-        return new ScheduleSelectDto(findById(id));
-    }
-
-    public ScheduleSelectDto updateSchedule(Long id , ScheduleUpdateDto scheduleUpdateDto) {
-        Schedule schedule = findById(id);
-
-        schedule.getScheduleMappingList().clear();
-
-        Set<Long> userList = new HashSet<>(scheduleUpdateDto.getUserList());
-        List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
-        for (Long userId : userList) {
-            ScheduleMapping scheduleMapping = new ScheduleMapping();
-            User user = userService.findById(userId);
+            User user = userService.getUserEntity(userId);
             scheduleMapping.update(schedule , user);
             schedule.addScheduleMappingList(scheduleMapping);
             scheduleMappingList.add(scheduleMapping);
         }
         scheduleMappingRepositry.saveAll(scheduleMappingList);
 
-        schedule.update(scheduleUpdateDto);
+        return new ScheduleSelectDto(schedule);
+    }
+
+    public ScheduleSelectDto getSchedule(Long id) {
+        return new ScheduleSelectDto(scheduleRepository.findByIdOrElseThrow(id));
+    }
+
+    public ScheduleSelectDto updateSchedule(Long id , ScheduleUpdateDto scheduleUpdateDto) {
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        schedule.getScheduleMappingList().clear();
+
+        List<ScheduleMapping> scheduleMappingList = new ArrayList<>();
+        for (Long userId : scheduleUpdateDto.getUserList()) {
+            ScheduleMapping scheduleMapping = new ScheduleMapping();
+            User user = userService.getUserEntity(userId);
+            scheduleMapping.update(schedule , user);
+            schedule.addScheduleMappingList(scheduleMapping);
+            scheduleMappingList.add(scheduleMapping);
+        }
+        scheduleMappingRepositry.saveAll(scheduleMappingList);
+
+        schedule.update(scheduleUpdateDto.getTitle() , scheduleUpdateDto.getContent());
         return new ScheduleSelectDto(schedule);
     }
 
     @Transactional(readOnly = true)
-    public Schedule findById(Long id) {
-        return scheduleRepository.findById(id).orElseThrow(() -> new NullPointerException("선택한 일정은 존재하지 않습니다."));
+    public Schedule getSchduleEntity(Long id) {
+        return scheduleRepository.findByIdOrElseThrow(id);
     }
 
     @Transactional(readOnly = true)
-    public Page<ScheduleSelectAllPagingDto> selectAllPagingSchedule(int page , int size) {
+    public Page<ScheduleSelectAllPagingDto> search(int page , int size) {
         PageRequest pageRequest = PageRequest.of(page - 1 , size , Sort.by("modifiedAt").descending());
         return scheduleRepository.findAll(pageRequest).map(ScheduleSelectAllPagingDto::new);
     }
 
-    public void deleteSchedule(Long id) {
-        Schedule schedule = findById(id);
+    public void removeSchedule(Long id) {
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
         scheduleRepository.delete(schedule);
     }
 }

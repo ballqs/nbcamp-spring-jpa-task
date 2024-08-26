@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 public class ScheduleInsertDto {
@@ -20,5 +20,5 @@ public class ScheduleInsertDto {
     @NotNull
     private Long userId;
     @NotNull
-    private List<Long> userList;
+    private Set<Long> userList;
 }
