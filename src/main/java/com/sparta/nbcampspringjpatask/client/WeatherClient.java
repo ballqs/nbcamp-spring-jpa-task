@@ -1,6 +1,6 @@
 package com.sparta.nbcampspringjpatask.client;
 
-import com.sparta.nbcampspringjpatask.dto.WeatherResponseDto;
+import com.sparta.nbcampspringjpatask.weather.dto.WeatherResponseDto;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
