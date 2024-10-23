@@ -15,7 +15,6 @@ public class WeatherService {
     public String getWeather(String date) {
         WeatherResponseDto[] weatherResponseDto = weatherClient.getWeatherData();
 
-        // 테스트 추가
         // 날씨 정보 가져오기(같은 클래스 내에 캐싱중인 메서드를 호출하면 캐시가 동작안할수도 있어서 weatherClient 뺌)
         return Arrays.stream(weatherResponseDto)
                 .filter(it -> it.getDate().equals(date))
