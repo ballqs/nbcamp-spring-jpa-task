@@ -8,12 +8,13 @@ services:
     restart: unless-stopped
     user: root
     ports:
-      - 8080:8080
+      - 8082:8082
       - 50000:50000
     volumes:
       - ./jenkins:/var/jenkins_home
       - ./jenkins/.ssh:/root/.ssh
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      JENKINS_OPTS: --httpPort=8082  # Jenkins HTTP 포트를 7070으로 설정
       DOCKER_HOST: unix:///var/run/docker.sock
     privileged: true  # Docker 실행을 위해 필요한 권한
